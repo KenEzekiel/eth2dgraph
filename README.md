@@ -1,5 +1,11 @@
 # Ethereum data to Dgraph database
 
+## Note
+
+This is a forked repository from [davideaimar/eth2dgraph](https://github.com/davideaimar/eth2dgraph.git), customized to accommodate the main project of [Smart Contract Discovery Engine](https://github.com/KenEzekiel/tugas-akhir.git)
+
+## Description
+
 This is a tool for extracting data from the Ethereum blockchain (or any other EVM-compatible chain) and index it with Dgraph, a distributed graph database.
 
 It uses the [heimdall-rs](https://github.com/Jon-Becker/heimdall-rs) decompiler to extract ABIs from EVM bytecodes.
