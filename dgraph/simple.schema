@@ -1,0 +1,60 @@
+<Account.address>: string @index(hash) @upsert .
+<Account.tags>: [string] @index(hash) .
+<Account.is_contract>: bool @index(bool) .
+
+<Block.datetime>: datetime @index(hour) .
+<Block.difficulty>: string @index(hash) .
+<Block.number>: int @index(int) @upsert .
+<Block.size>: int .
+
+<ContractDeployment.block>: uid @reverse .
+<ContractDeployment.contract>: uid @reverse .
+<ContractDeployment.creation_bytecode>: string .
+<ContractDeployment.creator>: uid @reverse .
+<ContractDeployment.deployed_bytecode>: string .
+<ContractDeployment.experimental>: bool .
+<ContractDeployment.failed_deploy>: bool .
+<ContractDeployment.solc_version>: string .
+<ContractDeployment.storage_address>: string .
+<ContractDeployment.storage_protocol>: string .
+<ContractDeployment.tx_hash>: string @index(hash) .
+<ContractDeployment.name>: string @index(trigram) .
+<ContractDeployment.verified_source>: bool @index(bool) .
+<ContractDeployment.verified_source_code>: string @index(term) .
+<ContractDeployment.description>: string @index(fulltext) . 
+<ContractDeployment.functionality>: string @index(fulltext) .
+<ContractDeployment.domain>: string @index(fulltext) .
+<ContractDeployment.security_risks>: [string] @index(fulltext) .
+
+type <Account> {
+	Account.address
+	Account.tags
+	Account.is_contract
+}
+type <Block> {
+	Block.number
+	Block.datetime
+	Block.difficulty
+	Block.size
+}
+type <ContractDeployment> {
+	ContractDeployment.contract
+	ContractDeployment.block
+	ContractDeployment.creator
+	ContractDeployment.tx_hash
+	ContractDeployment.failed_deploy
+	ContractDeployment.creation_bytecode
+	ContractDeployment.deployed_bytecode
+	ContractDeployment.storage_protocol
+	ContractDeployment.storage_address
+	ContractDeployment.experimental
+	ContractDeployment.solc_version
+	ContractDeployment.verified_source
+	ContractDeployment.verified_source_code
+	ContractDeployment.name
+  ContractDeployment.description
+  ContractDeployment.functionality
+  ContractDeployment.security_risks
+  ContractDeployment.domain
+}
+

@@ -1,0 +1,215 @@
+# GraphQL Schema for Smart Contract Data
+
+# ========================================================================
+# Extracted Information: Raw data directly parsed from smart contract source code
+# This section focuses on the structural and explicit elements of the Solidity code.
+# ========================================================================
+
+type Account {
+  address: String! @id @search(by: [hash])
+  tags: [String] @search(by: [hash])
+  is_contract: Boolean @search
+}
+
+type Block {
+  number: Int! @id @search
+  datetime: DateTime @search(by: [hour])
+  difficulty: String @search
+  size: Int
+}
+
+type ContractDeployment {
+  tx_hash: String! @id @search(by: [hash])
+  creation_bytecode: String
+  deployed_bytecode: String
+  name: String @search(by: [trigram])
+  description: String @search(by: [fulltext])
+  functionality: String @search(by: [fulltext])
+  domain: String @search(by: [fulltext])
+  security_risks: [String] @search(by: [fulltext])
+  experimental: Boolean @search
+  failed_deploy: Boolean @search
+  solc_version: String
+  storage_address: String
+  storage_protocol: String
+  verified_source: Boolean @search
+  verified_source_code: String @search(by: [term])
+
+  # Relationships (using @dgraph to specify predicate names from DQL schema)
+  contract: Account! @dgraph(pred: "ContractDeployment.contract")
+  block: Block! @dgraph(pred: "ContractDeployment.block")
+  creator: Account! @dgraph(pred: "ContractDeployment.creator")
+  parsed_source_data: ParsedContractData @dgraph(pred: "ContractDeployment.parsed_source_data")
+  interfaces: String @dgraph(pred: "ContractDeployment.interfaces") # Assuming this is a direct string reference as per your original Dgraph schema
+  analysis: ContractAnalysis @dgraph(pred: "ContractDeployment.analysis")
+}
+
+type ParsedContractData {
+  id: ID! # GraphQL ID for this node
+  # for_deployment: ContractDeployment # Reverse edge handled by ContractDeployment.parsed_source_data
+
+  imports: [String] @search(by: [term])
+  source_contract_name: String @search(by: [exact])
+  inherits_from: [String] @search(by: [hash])
+  implemented_interfaces_source: [String] @search(by: [hash])
+  natspec_contract_dev: String @search(by: [fulltext])
+  natspec_contract_notice: String @search(by: [fulltext])
+  token_name_literal: String @search(by: [exact])
+  token_symbol_literal: String @search(by: [exact])
+
+  state_variables: [StateVariable] @dgraph(pred: "ParsedContractData.state_variables")
+  functions: [FunctionDef] @dgraph(pred: "ParsedContractData.functions")
+  events: [EventDef] @dgraph(pred: "ParsedContractData.events")
+  modifiers: [ModifierDef] @dgraph(pred: "ParsedContractData.modifiers")
+  structs: [StructDef] @dgraph(pred: "ParsedContractData.structs")
+  enums: [EnumDef] @dgraph(pred: "ParsedContractData.enums")
+  custom_errors: [CustomErrorDef] @dgraph(pred: "ParsedContractData.custom_errors")
+}
+
+type StateVariable {
+  id: ID! # GraphQL ID for this node
+  name: String @search(by: [exact])
+  data_type: String @search(by: [hash])
+  visibility: String @search(by: [hash])
+  immutability: String @search(by: [hash])
+  natspec_dev: String @search(by: [fulltext])
+  # defined_in_contract: ParsedContractData # Reverse edge handled by ParsedContractData.state_variables
+}
+
+type ContractParam {
+  id: ID! # GraphQL ID for this node
+  name: String
+  data_type: String @search(by: [hash])
+  storage_location: String @search(by: [hash])
+  is_indexed: Boolean @search
+  # Reverse relationships handled by respective parent types or resolvers
+  # as_parameter_of_function: FunctionDef
+  # as_return_of_function: FunctionDef
+  # as_parameter_of_event: EventDef
+  # as_parameter_of_error: CustomErrorDef
+  # as_parameter_of_modifier: ModifierDef
+}
+
+type FunctionDef {
+  id: ID! # GraphQL ID for this node
+  name: String @search(by: [exact])
+  visibility: String @search(by: [hash])
+  mutability: String @search(by: [hash])
+  modifiers_used: [String] @search(by: [hash])
+  natspec_dev: String @search(by: [fulltext])
+  natspec_notice: String @search(by: [fulltext])
+  natspec_params_docs: [String] @search(by: [fulltext])
+  natspec_returns_docs: [String] @search(by: [fulltext])
+  internal_function_calls: [String] @search(by: [exact])
+  external_call_signatures: [String] @search(by: [term])
+  emitted_events: [String] @search(by: [exact])
+  reads_state_variables: [String] @search(by: [exact])
+  writes_state_variables: [String] @search(by: [exact])
+
+  parameters: [ContractParam] @dgraph(pred: "FunctionDef.parameters")
+  returns: [ContractParam] @dgraph(pred: "FunctionDef.returns")
+  # defined_in_contract: ParsedContractData # Reverse edge handled by ParsedContractData.functions
+}
+
+type EventDef {
+  id: ID! # GraphQL ID for this node
+  name: String @search(by: [exact])
+  natspec_dev: String @search(by: [fulltext])
+  natspec_notice: String @search(by: [fulltext])
+  natspec_params_docs: [String] @search(by: [fulltext])
+
+  parameters: [ContractParam] @dgraph(pred: "EventDef.parameters")
+  # defined_in_contract: ParsedContractData # Reverse edge handled by ParsedContractData.events
+}
+
+type ModifierDef {
+  id: ID! # GraphQL ID for this node
+  name: String @search(by: [exact])
+
+  parameters: [ContractParam] @dgraph(pred: "ModifierDef.parameters")
+  # defined_in_contract: ParsedContractData # Reverse edge handled by ParsedContractData.modifiers
+}
+
+type StructDef {
+  id: ID! # GraphQL ID for this node
+  name: String @search(by: [exact])
+
+  members: [StructMember] @dgraph(pred: "StructDef.members")
+  # defined_in_contract: ParsedContractData # Reverse edge handled by ParsedContractData.structs
+}
+
+type StructMember {
+  id: ID! # GraphQL ID for this node
+  name: String
+  data_type: String @search(by: [hash])
+  # part_of_struct: StructDef # Reverse edge handled by StructDef.members
+}
+
+type EnumDef {
+  id: ID! # GraphQL ID for this node
+  name: String @search(by: [exact])
+  values: [String] @search(by: [term])
+  # defined_in_contract: ParsedContractData # Reverse edge handled by ParsedContractData.enums
+}
+
+type CustomErrorDef {
+  id: ID! # GraphQL ID for this node
+  name: String @search(by: [exact])
+
+  parameters: [ContractParam] @dgraph(pred: "CustomErrorDef.parameters")
+  # defined_in_contract: ParsedContractData # Reverse edge handled by ParsedContractData.custom_errors
+}
+
+# ========================================================================
+# Inferred Insights: High-level semantic and behavioral analysis of the contract
+# This section is populated by an analysis engine, not directly from source.
+# ========================================================================
+
+type ContractAnalysis {
+  id: ID! # GraphQL ID for this node
+  # for_deployment: ContractDeployment # Reverse edge handled by ContractDeployment.analysis
+
+  contract_purpose: [String] @search(by: [fulltext])
+  function_purposes: [FunctionPurpose] @dgraph(pred: "ContractAnalysis.function_purposes")
+  access_control_patterns: [String] @search(by: [fulltext])
+  state_management_patterns: [String] @search(by: [fulltext])
+  design_patterns: [String] @search(by: [fulltext])
+  financial_operations_detected: [String] @search(by: [fulltext])
+  inferred_roles: [InferredRole] @dgraph(pred: "ContractAnalysis.inferred_roles")
+  security_risks_detected: [SecurityRiskHint] @dgraph(pred: "ContractAnalysis.security_risks_detected")
+  high_level_summary: String @search(by: [fulltext])
+  function_summaries: [FunctionSummary] @dgraph(pred: "ContractAnalysis.function_summaries")
+  tokenomics_hints: [String] @search(by: [fulltext])
+  standard_adherence: [String] @search(by: [fulltext])
+}
+
+type FunctionPurpose {
+  id: ID! # GraphQL ID for this node
+  function_name: String @search(by: [exact])
+  purpose_description: String @search(by: [fulltext])
+  # part_of_analysis: ContractAnalysis # Reverse edge handled by ContractAnalysis.function_purposes
+}
+
+type InferredRole {
+  id: ID! # GraphQL ID for this node
+  role_name: String @search(by: [exact])
+  description: String @search(by: [fulltext])
+  associated_functions: [String] @search(by: [exact])
+  # part_of_analysis: ContractAnalysis # Reverse edge handled by ContractAnalysis.inferred_roles
+}
+
+type SecurityRiskHint {
+  id: ID! # GraphQL ID for this node
+  risk_type: String @search(by: [term])
+  description: String @search(by: [fulltext])
+  affected_elements: [String] @search(by: [exact])
+  severity: String @search(by: [hash])
+  # part_of_analysis: ContractAnalysis # Reverse edge handled by ContractAnalysis.security_risks_detected
+}
+
+type FunctionSummary {
+  id: ID! # GraphQL ID for this node
+  function_name: String @search(by: [exact])
+  plain_english_summary: String @search(by: [fulltext])
+  # part_of_analysis: ContractAnalysis # Reverse edge handled by ContractAnalysis.function_summaries
+}

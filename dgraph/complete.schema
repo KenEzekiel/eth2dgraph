@@ -1,0 +1,335 @@
+# Dgraph Schema for Smart Contract Data
+
+# ========================================================================
+# Predicate Definitions
+# These lines define the name, data type, and indexing for each predicate.
+# Each predicate is defined only once here.
+# ========================================================================
+
+# Extracted Information: Raw data directly parsed from smart contract source code
+<Account.address>: string @index(hash) @upsert .
+<Account.tags>: [string] @index(hash) .
+<Account.is_contract>: bool @index(bool) .
+
+<Block.datetime>: datetime @index(hour) .
+<Block.difficulty>: string @index(hash) .
+<Block.number>: int @index(int) @upsert .
+<Block.size>: int .
+
+<ContractDeployment.block>: uid @reverse .
+<ContractDeployment.contract>: uid @reverse .
+<ContractDeployment.creation_bytecode>: string .
+<ContractDeployment.creator>: uid @reverse .
+<ContractDeployment.deployed_bytecode>: string .
+<ContractDeployment.experimental>: bool .
+<ContractDeployment.failed_deploy>: bool .
+<ContractDeployment.solc_version>: string .
+<ContractDeployment.storage_address>: string .
+<ContractDeployment.storage_protocol>: string .
+<ContractDeployment.tx_hash>: string @index(hash) .
+<ContractDeployment.name>: string @index(trigram) .
+<ContractDeployment.verified_source>: bool @index(bool) .
+<ContractDeployment.verified_source_code>: string @index(term) .
+<ContractDeployment.description>: string @index(fulltext) .
+<ContractDeployment.functionality>: string @index(fulltext) .
+<ContractDeployment.domain>: string @index(fulltext) .
+<ContractDeployment.security_risks>: [string] @index(fulltext) .
+<ContractDeployment.parsed_source_data>: uid @reverse .
+<ContractDeployment.interfaces>: uid @reverse .
+<ContractDeployment.analysis>: uid @reverse . # Link to inferred insights
+
+<ParsedContractData.for_deployment>: uid @reverse .
+<ParsedContractData.imports>: [string] @index(term) .
+<ParsedContractData.source_contract_name>: string @index(exact) .
+<ParsedContractData.inherits_from>: [string] @index(hash) .
+<ParsedContractData.implemented_interfaces_source>: [string] @index(hash) .
+<ParsedContractData.natspec_contract_dev>: string @index(fulltext) .
+<ParsedContractData.natspec_contract_notice>: string @index(fulltext) .
+<ParsedContractData.token_name_literal>: string @index(exact) .
+<ParsedContractData.token_symbol_literal>: string @index(exact) .
+<ParsedContractData.state_variables>: [uid] .
+<ParsedContractData.functions>: [uid] .
+<ParsedContractData.events>: [uid] .
+<ParsedContractData.modifiers>: [uid] .
+<ParsedContractData.structs>: [uid] .
+<ParsedContractData.enums>: [uid] .
+<ParsedContractData.custom_errors>: [uid] .
+
+<StateVariable.name>: string @index(exact) .
+<StateVariable.data_type>: string @index(hash) .
+<StateVariable.visibility>: string @index(hash) .
+<StateVariable.immutability>: string @index(hash) .
+<StateVariable.natspec_dev>: string @index(fulltext) .
+<StateVariable.defined_in_contract>: uid @reverse .
+
+<ContractParam.name>: string .
+<ContractParam.data_type>: string @index(hash) .
+<ContractParam.storage_location>: string @index(hash) .
+<ContractParam.is_indexed>: bool @index(bool) .
+<ContractParam.as_parameter_of_function>: uid @reverse .
+<ContractParam.as_return_of_function>: uid @reverse .
+<ContractParam.as_parameter_of_event>: uid @reverse .
+<ContractParam.as_parameter_of_error>: uid @reverse .
+<ContractParam.as_parameter_of_modifier>: uid @reverse .
+
+<FunctionDef.name>: string @index(exact) .
+<FunctionDef.parameters>: [uid] .
+<FunctionDef.returns>: [uid] .
+<FunctionDef.visibility>: string @index(hash) .
+<FunctionDef.mutability>: string @index(hash) .
+<FunctionDef.modifiers_used>: [string] @index(hash) .
+<FunctionDef.natspec_dev>: string @index(fulltext) .
+<FunctionDef.natspec_notice>: string @index(fulltext) .
+<FunctionDef.natspec_params_docs>: [string] @index(fulltext) .
+<FunctionDef.natspec_returns_docs>: [string] @index(fulltext) .
+<FunctionDef.internal_function_calls>: [string] @index(exact) .
+<FunctionDef.external_call_signatures>: [string] @index(term) .
+<FunctionDef.emitted_events>: [string] @index(exact) .
+<FunctionDef.reads_state_variables>: [string] @index(exact) .
+<FunctionDef.writes_state_variables>: [string] @index(exact) .
+<FunctionDef.defined_in_contract>: uid @reverse .
+
+<EventDef.name>: string @index(exact) .
+<EventDef.parameters>: [uid] .
+<EventDef.natspec_dev>: string @index(fulltext) .
+<EventDef.natspec_notice>: string @index(fulltext) .
+<EventDef.natspec_params_docs>: [string] @index(fulltext) .
+<EventDef.defined_in_contract>: uid @reverse .
+
+<ModifierDef.name>: string @index(exact) .
+<ModifierDef.parameters>: [uid] .
+<ModifierDef.defined_in_contract>: uid @reverse .
+
+<StructDef.name>: string @index(exact) .
+<StructDef.members>: [uid] .
+<StructDef.defined_in_contract>: uid @reverse .
+
+<StructMember.name>: string .
+<StructMember.data_type>: string @index(hash) .
+<StructMember.part_of_struct>: uid @reverse .
+
+<EnumDef.name>: string @index(exact) .
+<EnumDef.values>: [string] @index(term) .
+<EnumDef.defined_in_contract>: uid @reverse .
+
+<CustomErrorDef.name>: string @index(exact) .
+<CustomErrorDef.parameters>: [uid] .
+<CustomErrorDef.defined_in_contract>: uid @reverse .
+
+# Inferred Insights: High-level semantic and behavioral analysis of the contract
+<ContractAnalysis.for_deployment>: uid @reverse .
+<ContractAnalysis.contract_purpose>: [string] @index(fulltext) .
+<ContractAnalysis.function_purposes>: [uid] .
+<ContractAnalysis.access_control_patterns>: [string] @index(fulltext) .
+<ContractAnalysis.state_management_patterns>: [string] @index(fulltext) .
+<ContractAnalysis.design_patterns>: [string] @index(fulltext) .
+<ContractAnalysis.financial_operations_detected>: [string] @index(fulltext) .
+<ContractAnalysis.inferred_roles>: [uid] .
+<ContractAnalysis.security_risks_detected>: [uid] .
+<ContractAnalysis.high_level_summary>: string @index(fulltext) .
+<ContractAnalysis.function_summaries>: [uid] .
+<ContractAnalysis.tokenomics_hints>: [string] @index(fulltext) .
+<ContractAnalysis.standard_adherence>: [string] @index(fulltext) .
+
+<FunctionPurpose.function_name>: string @index(exact) .
+<FunctionPurpose.purpose_description>: string @index(fulltext) .
+<FunctionPurpose.part_of_analysis>: uid @reverse .
+
+<InferredRole.role_name>: string @index(exact) .
+<InferredRole.description>: string @index(fulltext) .
+<InferredRole.associated_functions>: [string] @index(exact) .
+<InferredRole.part_of_analysis>: uid @reverse .
+
+<SecurityRiskHint.risk_type>: string @index(term) .
+<SecurityRiskHint.description>: string @index(fulltext) .
+<SecurityRiskHint.affected_elements>: [string] @index(exact) .
+<SecurityRiskHint.severity>: string @index(hash) .
+<SecurityRiskHint.part_of_analysis>: uid @reverse .
+
+<FunctionSummary.function_name>: string @index(exact) .
+<FunctionSummary.plain_english_summary>: string @index(fulltext) .
+<FunctionSummary.part_of_analysis>: uid @reverse .
+
+# ========================================================================
+# Type Definitions
+# These blocks specify which predicates belong to each type.
+# Each type is defined only once here.
+# ========================================================================
+
+type <Account> {
+	Account.address
+	Account.tags
+	Account.is_contract
+}
+
+type <Block> {
+	Block.number
+	Block.datetime
+	Block.difficulty
+	Block.size
+}
+
+type <ContractDeployment> {
+	ContractDeployment.contract
+	ContractDeployment.block
+	ContractDeployment.creator
+	ContractDeployment.tx_hash
+	ContractDeployment.failed_deploy
+	ContractDeployment.creation_bytecode
+	ContractDeployment.deployed_bytecode
+	ContractDeployment.storage_protocol
+	ContractDeployment.storage_address
+	ContractDeployment.experimental
+	ContractDeployment.solc_version
+	ContractDeployment.verified_source
+	ContractDeployment.verified_source_code
+	ContractDeployment.name
+    ContractDeployment.description
+    ContractDeployment.functionality
+    ContractDeployment.security_risks
+    ContractDeployment.domain
+    ContractDeployment.parsed_source_data
+    ContractDeployment.interfaces
+    ContractDeployment.analysis
+}
+
+type <ParsedContractData> {
+    ParsedContractData.for_deployment
+    ParsedContractData.imports
+    ParsedContractData.source_contract_name
+    ParsedContractData.inherits_from
+    ParsedContractData.implemented_interfaces_source
+    ParsedContractData.natspec_contract_dev
+    ParsedContractData.natspec_contract_notice
+    ParsedContractData.token_name_literal
+    ParsedContractData.token_symbol_literal
+    ParsedContractData.state_variables
+    ParsedContractData.functions
+    ParsedContractData.events
+    ParsedContractData.modifiers
+    ParsedContractData.structs
+    ParsedContractData.enums
+    ParsedContractData.custom_errors
+}
+
+type <StateVariable> {
+    StateVariable.name
+    StateVariable.data_type
+    StateVariable.visibility
+    StateVariable.immutability
+    StateVariable.natspec_dev
+    StateVariable.defined_in_contract
+}
+
+type <ContractParam> {
+    ContractParam.name
+    ContractParam.data_type
+    ContractParam.storage_location
+    ContractParam.is_indexed
+    ContractParam.as_parameter_of_function
+    ContractParam.as_return_of_function
+    ContractParam.as_parameter_of_event
+    ContractParam.as_parameter_of_error
+    ContractParam.as_parameter_of_modifier
+}
+
+type <FunctionDef> {
+    FunctionDef.name
+    FunctionDef.parameters
+    FunctionDef.returns
+    FunctionDef.visibility
+    FunctionDef.mutability
+    FunctionDef.modifiers_used
+    FunctionDef.natspec_dev
+    FunctionDef.natspec_notice
+    FunctionDef.natspec_params_docs
+    FunctionDef.natspec_returns_docs
+    FunctionDef.internal_function_calls
+    FunctionDef.external_call_signatures
+    FunctionDef.emitted_events
+    FunctionDef.reads_state_variables
+    FunctionDef.writes_state_variables
+    FunctionDef.defined_in_contract
+}
+
+type <EventDef> {
+    EventDef.name
+    EventDef.parameters
+    EventDef.natspec_dev
+    EventDef.natspec_notice
+    EventDef.natspec_params_docs
+    EventDef.defined_in_contract
+}
+
+type <ModifierDef> {
+    ModifierDef.name
+    ModifierDef.parameters
+    ModifierDef.defined_in_contract
+}
+
+type <StructDef> {
+    StructDef.name
+    StructDef.members
+    StructDef.defined_in_contract
+}
+
+type <StructMember> {
+    StructMember.name
+    StructMember.data_type
+    StructMember.part_of_struct
+}
+
+type <EnumDef> {
+    EnumDef.name
+    EnumDef.values
+    EnumDef.defined_in_contract
+}
+
+type <CustomErrorDef> {
+    CustomErrorDef.name
+    CustomErrorDef.parameters
+    CustomErrorDef.defined_in_contract
+}
+
+type <ContractAnalysis> {
+    ContractAnalysis.for_deployment
+    ContractAnalysis.contract_purpose
+    ContractAnalysis.function_purposes
+    ContractAnalysis.access_control_patterns
+    ContractAnalysis.state_management_patterns
+    ContractAnalysis.design_patterns
+    ContractAnalysis.financial_operations_detected
+    ContractAnalysis.inferred_roles
+    ContractAnalysis.security_risks_detected
+    ContractAnalysis.high_level_summary
+    ContractAnalysis.function_summaries
+    ContractAnalysis.tokenomics_hints
+    ContractAnalysis.standard_adherence
+}
+
+type <FunctionPurpose> {
+    FunctionPurpose.function_name
+    FunctionPurpose.purpose_description
+    FunctionPurpose.part_of_analysis
+}
+
+type <InferredRole> {
+    InferredRole.role_name
+    InferredRole.description
+    InferredRole.associated_functions
+    InferredRole.part_of_analysis
+}
+
+type <SecurityRiskHint> {
+    SecurityRiskHint.risk_type
+    SecurityRiskHint.description
+    SecurityRiskHint.affected_elements
+    SecurityRiskHint.severity
+    SecurityRiskHint.part_of_analysis
+}
+
+type <FunctionSummary> {
+    FunctionSummary.function_name
+    FunctionSummary.plain_english_summary
+    FunctionSummary.part_of_analysis
+}

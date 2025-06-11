@@ -1,0 +1,35 @@
+type Account {
+  address: String! @id @search(by: [hash])
+  tags: [String] @search(by: [hash])
+  is_contract: Boolean @search
+}
+
+type Block {
+  number: Int! @id @search
+  datetime: DateTime @search(by: [hour])
+  difficulty: String @search
+  size: Int
+}
+
+type ContractDeployment {
+  tx_hash: String! @id @search(by: [hash])
+  creation_bytecode: String
+  deployed_bytecode: String
+  name: String @search(by: [trigram])
+  description: String @search(by: [fulltext])
+  functionality: String @search(by: [fulltext])
+  domain: String @search(by: [fulltext])
+  security_risks: [String] @search(by: [fulltext])
+  experimental: Boolean @search
+  failed_deploy: Boolean @search
+  solc_version: String
+  storage_address: String
+  storage_protocol: String
+  verified_source: Boolean @search
+  verified_source_code: String @search(by: [term])
+
+  # Relationships
+  contract: Account! @dgraph(pred: "ContractDeployment.contract")
+  block: Block! @dgraph(pred: "ContractDeployment.block")
+  creator: Account! @dgraph(pred: "ContractDeployment.creator")
+}

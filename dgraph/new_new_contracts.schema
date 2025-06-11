@@ -1,0 +1,319 @@
+<Account.address>: string @index(hash) @upsert .
+<Account.tags>: [string] @index(hash) .
+<Account.is_contract>: bool @index(bool) .
+<Block.base_fee_per_gas>: float .
+<Block.datetime>: datetime @index(hour) .
+<Block.difficulty>: string @index(hash) .
+<Block.gas_limit>: int .
+<Block.gas_used>: int @index(int) .
+<Block.gas_price_avg>: float @index(float) .
+<Block.gas_price_max>: float .
+<Block.gas_price_min>: float .
+<Block.gas_price_std_dev>: float .
+<Block.number>: int @index(int) @upsert .
+<Block.size>: int .
+<Block.tx_count>: int .
+<Block.miner>: uid @reverse .
+<Block.withdrawals>: [uid] @reverse .
+<ContractDeployment.block>: uid @reverse .
+<ContractDeployment.contract>: uid @reverse .
+<ContractDeployment.creation_bytecode>: string .
+<ContractDeployment.creator>: uid @reverse .
+<ContractDeployment.deployed_bytecode>: string .
+<ContractDeployment.experimental>: bool .
+<ContractDeployment.failed_deploy>: bool .
+<ContractDeployment.skeleton>: uid @reverse .
+<ContractDeployment.solc_version>: string .
+<ContractDeployment.storage_address>: string .
+<ContractDeployment.storage_protocol>: string .
+<ContractDeployment.tx_hash>: string @index(hash) .
+<ContractDeployment.name>: string @index(trigram) .
+<ContractDeployment.verified_source>: bool @index(bool) .
+<ContractDeployment.verified_source_code>: string @index(term) .
+<ContractDestruction.balance_left>: string .
+<ContractDestruction.block>: uid @reverse .
+<ContractDestruction.contract>: uid @reverse .
+<ContractDestruction.refound_address>: uid .
+<ContractDestruction.failed>: bool @index(bool) .
+<ContractDestruction.tx_hash>: string @index(hash) .
+<Error.inputs>: string @index(trigram) .
+<Error.name>: string @index(exact) .
+<Error.signature>: string @index(hash) @upsert .
+<Event.inputs>: string @index(trigram) .
+<Event.name>: string @index(exact) .
+<Event.signature>: string @index(hash) @upsert .
+<Function.inputs>: string @index(trigram) .
+<Function.name>: string @index(exact) .
+<Function.bytes4>: string @index(hash) .
+<Function.outputs>: string @index(trigram) .
+<Function.signature>: string @index(hash) @upsert .
+<Skeleton.bytecode>: string @index(hash) .
+<Skeleton.erc20_compliancy>: int @index(int) .
+<Skeleton.erc721_compliancy>: int @index(int) .
+<Skeleton.errors>: [uid] @reverse .
+<Skeleton.events>: [uid] @reverse .
+<Skeleton.failed_decompilation>: bool .
+<Skeleton.functions>: [uid] @reverse .
+<Skeleton.similar_code>: [uid] .
+<Skeleton.similar_interface>: [uid] .
+<TokenTransfer.block>: uid @reverse .
+<TokenTransfer.contract>: uid @reverse .
+<TokenTransfer.from>: uid @reverse .
+<TokenTransfer.to>: uid @reverse .
+<TokenTransfer.tx>: uid .
+<TokenTransfer.value>: string .
+<TokenTransfer.token_id>: string @index(hash) .
+<Transaction.block>: uid @reverse .
+<Transaction.from>: uid @reverse .
+<Transaction.gas>: int .
+<Transaction.gas_price>: int .
+<Transaction.hash>: string @index(hash) @upsert .
+<Transaction.input>: string .
+<Transaction.bytes4>: string @index(hash) .
+<Transaction.max_fee_per_gas>: int .
+<Transaction.max_priority_fee_per_gas>: int .
+<Transaction.nonce>: int .
+<Transaction.r>: string .
+<Transaction.s>: string .
+<Transaction.to>: uid @reverse .
+<Transaction.v>: string .
+<Transaction.value>: string .
+<Log.contract>: uid @reverse .
+<Log.block>: uid @reverse .
+<Log.tx>: uid @reverse .
+<Log.topic_0>: string @index(hash) .
+<Log.topic_1>: string @index(hash) .
+<Log.topic_2>: string @index(hash) .
+<Log.topic_3>: string @index(hash) .
+<Log.data>: string .
+<Log.tx_index>: int .
+<Log.index>: int .
+<Withdrawal.address>: uid @reverse .
+<Withdrawal.string>: int .
+<Withdrawal.index>: int .
+<Withdrawal.validator_index>: int .
+<Withdrawal.amount>: int .
+type <Account> {
+	Account.address
+	Account.tags
+	Account.is_contract
+}
+type <Block> {
+	Block.number
+	Block.datetime
+	Block.difficulty
+	Block.tx_count
+	Block.gas_price_min
+	Block.gas_price_max
+	Block.gas_price_avg
+	Block.gas_price_std_dev
+	Block.gas_limit
+	Block.gas_used
+	Block.base_fee_per_gas
+	Block.size
+	Block.miner
+	Block.withdrawals
+}
+type <ContractDeployment> {
+	ContractDeployment.contract
+	ContractDeployment.block
+	ContractDeployment.creator
+	ContractDeployment.tx_hash
+	ContractDeployment.failed_deploy
+	ContractDeployment.creation_bytecode
+	ContractDeployment.deployed_bytecode
+	ContractDeployment.skeleton
+	ContractDeployment.storage_protocol
+	ContractDeployment.storage_address
+	ContractDeployment.experimental
+	ContractDeployment.solc_version
+	ContractDeployment.verified_source
+	ContractDeployment.verified_source_code
+	ContractDeployment.name
+}
+type <ContractDestruction> {
+	ContractDestruction.contract
+	ContractDestruction.block
+	ContractDestruction.tx_hash
+	ContractDestruction.balance_left
+	ContractDestruction.refound_address
+	ContractDestruction.failed
+}
+type <Error> {
+	Error.signature
+	Error.name
+	Error.inputs
+}
+type <Event> {
+	Event.signature
+	Event.name
+	Event.inputs
+}
+
+type <TokenTransfer> {
+	TokenTransfer.contract
+	TokenTransfer.from
+	TokenTransfer.to
+	TokenTransfer.value
+	TokenTransfer.block
+	TokenTransfer.tx
+	TokenTransfer.token_id
+}
+type <Transaction> {
+	Transaction.hash
+	Transaction.from
+	Transaction.to
+	Transaction.block
+	Transaction.value
+	Transaction.gas
+	Transaction.gas_price
+	Transaction.input
+	Transaction.bytes4
+	Transaction.max_fee_per_gas
+	Transaction.max_priority_fee_per_gas
+	Transaction.nonce
+	Transaction.r
+	Transaction.s
+	Transaction.v
+}
+type <Log> {
+	Log.contract
+	Log.block
+	Log.tx
+	Log.topic_0
+	Log.topic_1
+	Log.topic_2
+	Log.topic_3
+	Log.data
+	Log.tx_index
+	Log.index
+}
+type <Withdrawal> {
+	Withdrawal.address
+	Withdrawal.amount
+	Withdrawal.index
+	Withdrawal.validator_index
+}
+
+# ------ Enhanced Contract Semantics ------
+<ContractDeployment.description>: string @index(fulltext) . 
+<ContractDeployment.ontology>: [string] @index(trigram) . 
+<ContractDeployment.functional_requirements>: [string] @index(fulltext) .
+<ContractDeployment.non_functional_requirements>: [string] @index(fulltext) .
+<ContractDeployment.version_history>: [uid] @reverse .
+<ContractDeployment.dependencies>: [uid] @reverse .
+<ContractDeployment.security_posture>: [string] @index(term) .
+<ContractDeployment.compliance>: [string] @index(exact) .
+<ContractDeployment.semantic_fingerprint>: string @index(hash) .
+<ContractDeployment.use_case>: [string] @index(trigram) .  # Restored from v1
+<ContractDeployment.implementsStandard>: uid @reverse .  # Restored critical relationship
+<ContractDeployment.stateVariables>: [uid] @reverse .  # Restored from v1
+
+# ------ Temporal Semantic Tracking ------
+type <SemanticSnapshot> {
+  SemanticSnapshot.datetime
+  SemanticSnapshot.model_version
+  SemanticSnapshot.ontology_version
+  SemanticSnapshot.description
+  SemanticSnapshot.confidence
+  SemanticSnapshot.human_verified  # Added validation layer
+  SemanticSnapshot.auto_validation_score
+}
+<SemanticSnapshot.datetime>: datetime @index(hour) .
+<SemanticSnapshot.model_version>: string .
+<SemanticSnapshot.ontology_version>: string .
+<SemanticSnapshot.description>: string @index(fulltext) @lang .
+<SemanticSnapshot.confidence>: float .
+<SemanticSnapshot.human_verified>: bool @index(bool) .
+<SemanticSnapshot.auto_validation_score>: float .
+
+# ------ Cross-Contract Relationships ------
+type <InterContractCall> {
+  InterContractCall.caller
+  InterContractCall.callee
+  InterContractCall.semantic_type
+  InterContractCall.gas_profile  # Added from analysis
+}
+<InterContractCall.caller>: uid @reverse .
+<InterContractCall.callee>: uid @reverse .
+<InterContractCall.semantic_type>: string @index(exact) .
+<InterContractCall.gas_profile>: int .
+
+# ------ Enhanced Function Analysis ------
+type <Function> {
+  Function.signature
+  Function.name
+  Function.inputs
+  Function.outputs
+  Function.bytes4
+  Function.category  # Restored from v1
+  Function.complexity  # Restored critical field
+  Function.access_control  # Restored security field
+  Function.semantic_summary  # Restored LLM field
+  Function.control_flow_complexity
+  Function.storage_access
+  Function.criticality
+  Function.invariants
+  Function.callsFunction  # Restored relationship
+  Function.called_by  # Inverse relationship
+  Function.security_properties  # Enhanced security
+}
+<Function.category>: string @index(trigram) .
+<Function.complexity>: int . # Gas cost estimation or computational intensity
+<Function.access_control>: string @index(trigram) . # Examples: "OnlyOwner", "AdminRequired"
+<Function.semantic_summary>: string @index(fulltext) .
+<Function.control_flow_complexity>: int .
+<Function.storage_access>: [string] @index(term) .
+<Function.criticality>: string @index(exact) .
+<Function.invariants>: [string] @index(fulltext) .
+<Function.security_properties>: [string] @index(term) .
+<Function.callsFunction>: uid @reverse .  # Represents internal function calls
+<Function.called_by>: uid @reverse .  # Represents inverse internal function calls
+
+# ------ Security Framework ------
+type <SecurityAdvisory> {
+  SecurityAdvisory.cve_id
+  SecurityAdvisory.affected_functions
+  SecurityAdvisory.mitigations
+  SecurityAdvisory.detection_rules  # Added from analysis
+}
+<SecurityAdvisory.cve_id>: string @index(exact) .
+<SecurityAdvisory.affected_functions>: [uid] @reverse .
+<SecurityAdvisory.mitigations>: [string] @index(fulltext) .
+<SecurityAdvisory.detection_rules>: string @index(hash) .
+
+# ------ Ontology Relationships ------
+type <OntologyReference> {
+  OntologyReference.uri
+  OntologyReference.version
+  OntologyReference.checksum
+}
+<OntologyReference.uri>: string @index(hash) .
+<OntologyReference.version>: string .
+<OntologyReference.checksum>: string @index(hash) .
+
+# ------ Enrichment Metadata ------
+<ContractDeployment.enrichment_pipeline>: [uid] @reverse .
+type <EnrichmentStep> {
+  EnrichmentStep.name
+  EnrichmentStep.version
+  EnrichmentStep.timestamp
+}
+<EnrichmentStep.name>: string @index(exact) .
+<EnrichmentStep.version>: string .
+<EnrichmentStep.timestamp>: datetime .
+
+# ------ Existing Types with Enhancements ------
+type <Skeleton> {
+  Skeleton.bytecode
+  Skeleton.functions
+  Skeleton.events
+  Skeleton.errors
+  Skeleton.failed_decompilation
+  Skeleton.erc20_compliancy
+  Skeleton.erc721_compliancy
+  Skeleton.similar_code
+  Skeleton.similar_interface
+  Skeleton.control_flow_graph  # Added from analysis
+}
+<Skeleton.control_flow_graph>: string .
